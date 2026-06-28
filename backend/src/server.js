@@ -1,10 +1,11 @@
 import express from "express";
-import notesRoutes from "./routes/notesRoutes.js";
 import { connectDB } from "./config/db.js";
 import dns from "dns";
 import dotenv from "dotenv";
 import path from "path";
 import cors from "cors";
+import grievanceRoutes from "./routes/grievanceRoutes.js";
+
 
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
 
@@ -25,7 +26,8 @@ if(process.env.NODE_ENV!=="production") {
 //middleware
 app.use(express.json());
 
-app.use("/api/notes", notesRoutes);
+// app.use("/api/notes", notesRoutes);
+app.use("/api/grievances", grievanceRoutes);
 
 if(process.env.NODE_ENV==="production")  {
     app.use(express.static(path.join(__dirname,"../frontend/dist")));

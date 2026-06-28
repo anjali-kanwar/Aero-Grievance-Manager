@@ -1,6 +1,8 @@
 import {Route, Routes} from "react-router";
 import LoginPage from "./pages/LoginPage.jsx";
 import HomePage from "./pages/HomePage.jsx";
+import DataRetrievePage from "./pages/DataRetrievePage.jsx";
+import DataVisualizePage from "./pages/DataVisualizePage.jsx";
 
 const App = () => {
   return (
@@ -8,8 +10,8 @@ const App = () => {
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route path="/home" element={<HomePage />} />
-        {/* <Route path="/retrieve" element={<DataRetrievePage />} />
-        <Route path="/visualize" element={<DataVisualizePage />} /> */}
+        <Route path="/retrieve" element={<DataRetrievePage />} />
+        <Route path="/visualize" element={<DataVisualizePage />} />
       </Routes>
     </div>
   );
