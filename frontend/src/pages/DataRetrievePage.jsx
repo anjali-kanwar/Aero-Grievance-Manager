@@ -35,6 +35,13 @@ const toLocalDateString = (date) => {
   return `${y}-${m}-${d}`;
 };
 
+const formatDateDDMMYYYY = (date) => {
+  const d = String(date.getDate()).padStart(2, "0");
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const y = date.getFullYear();
+  return `${d}/${m}/${y}`;
+};
+
 const CheckListDropdown = ({ label, options, selected, onToggle }) => {
   const [open, setOpen] = useState(false);
 
@@ -119,7 +126,7 @@ const DataRetrievePage = () => {
         const d = new Date(r.createdAt);
         return [
           i + 1,
-          d.toLocaleDateString(),
+          formatDateDDMMYYYY(d),
           d.toLocaleTimeString(),
           r.organizationName,
           r.complainingUnit,
@@ -235,7 +242,7 @@ const DataRetrievePage = () => {
                     return (
                       <tr key={row._id} className="border-b border-slate-100 hover:bg-slate-50">
                         <td className="px-4 py-3">{i + 1}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">{d.toLocaleDateString()}</td>
+                        <td className="px-4 py-3 whitespace-nowrap">{formatDateDDMMYYYY(d)}</td>
                         <td className="px-4 py-3 whitespace-nowrap">{d.toLocaleTimeString()}</td>
                         <td className="px-4 py-3">{row.organizationName}</td>
                         <td className="px-4 py-3">{row.complainingUnit}</td>

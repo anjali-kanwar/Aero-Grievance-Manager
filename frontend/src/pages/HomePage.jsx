@@ -33,6 +33,13 @@ const EMPTY_FORM = {
 
 const API_URL = "/api/grievances";
 
+const formatDateDDMMYYYY = (date) => {
+  const d = String(date.getDate()).padStart(2, "0");
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const y = date.getFullYear();
+  return `${d}/${m}/${y}`;
+};
+
 const HomePage = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState(EMPTY_FORM);
@@ -63,6 +70,7 @@ const HomePage = () => {
 
   const handleChange = (field) => (e) =>
     setForm((prev) => ({ ...prev, [field]: e.target.value }));
+
 
   const handleSubmit = async () => {
     if (!isFormComplete) return;
@@ -129,7 +137,7 @@ const HomePage = () => {
         const d = new Date(r.createdAt);
         return [
           i + 1,
-          d.toLocaleDateString(),
+          formatDateDDMMYYYY(d),
           d.toLocaleTimeString(),
           r.organizationName,
           r.complainingUnit,
@@ -302,7 +310,7 @@ const HomePage = () => {
                     return (
                       <tr key={row._id} className="border-b border-slate-100 hover:bg-slate-50">
                         <td className="px-4 py-3">{i + 1}</td>
-                        <td className="px-4 py-3 whitespace-nowrap">{d.toLocaleDateString()}</td>
+                        <td className="px-4 py-3 whitespace-nowrap">{formatDateDDMMYYYY(d)}</td>
                         <td className="px-4 py-3 whitespace-nowrap">{d.toLocaleTimeString()}</td>
                         <td className="px-4 py-3">{row.organizationName}</td>
                         <td className="px-4 py-3">{row.complainingUnit}</td>

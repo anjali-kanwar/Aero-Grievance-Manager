@@ -8,14 +8,23 @@ const LoginPage = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (username === "abc" && password === "123") {
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
+    if (res.ok) {
       navigate("/home");
     } else {
       toast.error("Incorrect username or password");
     }
-  };
+  } catch (err) {
+    toast.error("Something went wrong");
+  }
+};
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#0a1128]">
@@ -110,85 +119,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-
-
-
-
-
-
-// import { useState } from "react";
-// import { useNavigate } from "react-router";
-// import toast from "react-hot-toast";
-// import aaiLogo from "../assets/aai-logo.jpg";
-
-// const LoginPage = () => {
-//   const [username, setUsername] = useState("");
-//   const [password, setPassword] = useState("");
-//   const navigate = useNavigate();
-
-//   const handleSubmit = (e) => {
-//     e.preventDefault();
-
-//     if (username === "abc" && password === "123") {
-//       navigate("/home");
-//     } else {
-//       toast.error("Incorrect username or password");
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen flex">
-//       {/* Left side - logo */}
-//       <div className="hidden md:flex w-1/2 items-center justify-center bg-base-200">
-//         <img
-//           src={aaiLogo}
-//           alt="Airports Authority of India"
-//           className="w-72 h-auto"
-//         />
-//       </div>
-
-//       {/* Right side - login form */}
-//       <div className="flex w-full md:w-1/2 items-center justify-center bg-base-100 px-8">
-//         <div className="w-full max-w-sm">
-//           <h1 className="text-2xl font-bold mb-6 text-center">Login</h1>
-
-//           <form onSubmit={handleSubmit} className="space-y-4">
-//             <div>
-//               <label className="label">
-//                 <span className="label-text">Username</span>
-//               </label>
-//               <input
-//                 type="text"
-//                 placeholder="Enter username"
-//                 className="input input-bordered w-full"
-//                 value={username}
-//                 onChange={(e) => setUsername(e.target.value)}
-//                 required
-//               />
-//             </div>
-
-//             <div>
-//               <label className="label">
-//                 <span className="label-text">Password</span>
-//               </label>
-//               <input
-//                 type="password"
-//                 placeholder="Enter password"
-//                 className="input input-bordered w-full"
-//                 value={password}
-//                 onChange={(e) => setPassword(e.target.value)}
-//                 required
-//               />
-//             </div>
-
-//             <button type="submit" className="btn btn-primary w-full">
-//               Submit
-//             </button>
-//           </form>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default LoginPage;

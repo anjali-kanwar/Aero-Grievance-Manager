@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 import path from "path";
 import cors from "cors";
 import grievanceRoutes from "./routes/grievanceRoutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 
 dns.setServers(["1.1.1.1", "8.8.8.8"]);
@@ -26,7 +27,8 @@ if(process.env.NODE_ENV!=="production") {
 //middleware
 app.use(express.json());
 
-// app.use("/api/notes", notesRoutes);
+app.use("/api/auth", authRoutes);
+
 app.use("/api/grievances", grievanceRoutes);
 
 if(process.env.NODE_ENV==="production")  {
