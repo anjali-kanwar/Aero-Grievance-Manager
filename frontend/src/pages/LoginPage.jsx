@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import toast from "react-hot-toast";
 import aaiLogo from "../assets/aai-logo.jpg";
@@ -7,6 +7,10 @@ const LoginPage = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+  sessionStorage.removeItem("cameFromLogin");
+  }, []);
 
   const handleSubmit = async (e) => {
   e.preventDefault();
@@ -17,6 +21,7 @@ const LoginPage = () => {
       body: JSON.stringify({ username, password }),
     });
     if (res.ok) {
+      sessionStorage.setItem("cameFromLogin", "true");
       navigate("/home");
     } else {
       toast.error("Incorrect username or password");

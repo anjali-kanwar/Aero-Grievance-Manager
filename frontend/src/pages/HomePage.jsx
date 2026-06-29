@@ -63,6 +63,10 @@ const HomePage = () => {
     }
   };
 
+  useEffect(() => {
+    sessionStorage.removeItem("cameFromHome");
+  }, []);
+
   const resetForm = () => {
     setForm(EMPTY_FORM);
     setEditingId(null);
@@ -160,18 +164,24 @@ const HomePage = () => {
         <div className="flex items-center gap-3">
           <img src={aaiLogo} alt="AAI" className="h-24 w-auto" />
           <span className="text-2xl font-semibold text-[#2e4d9e] tracking-wide">
-             Airports Authority of India
+            Airports Authority of India
           </span>
-         </div>
+        </div>
         <div className="flex gap-3">
           <button
-            onClick={() => navigate("/retrieve")}
+            onClick={() => {
+              sessionStorage.setItem("cameFromHome", "true");
+              navigate("/retrieve");
+            }}
             className="px-4 py-2 rounded-lg border border-[#2e4d9e] text-[#2e4d9e] font-medium hover:bg-[#2e4d9e] hover:text-white transition"
           >
             Data Retrieve
           </button>
           <button
-            onClick={() => navigate("/visualize")}
+            onClick={() => {
+              sessionStorage.setItem("cameFromHome", "true");
+              navigate("/visualize");
+            }}
             className="px-4 py-2 rounded-lg border border-[#2e4d9e] text-[#2e4d9e] font-medium hover:bg-[#2e4d9e] hover:text-white transition"
           >
             Data Visualize
@@ -273,11 +283,10 @@ const HomePage = () => {
             <button
               onClick={handleSubmit}
               disabled={!isFormComplete || loading}
-              className={`px-5 py-2 rounded-lg font-medium transition ${
-                isFormComplete && !loading
+              className={`px-5 py-2 rounded-lg font-medium transition ${isFormComplete && !loading
                   ? "bg-[#2e4d9e] text-white hover:bg-[#3a5cb8]"
                   : "bg-slate-200 text-slate-400 cursor-not-allowed"
-              }`}
+                }`}
             >
               {editingId ? "Update Data" : "Add Data"}
             </button>
@@ -317,11 +326,10 @@ const HomePage = () => {
                         <td className="px-4 py-3 max-w-xs truncate">{row.logExtract}</td>
                         <td className="px-4 py-3">
                           <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              row.status === "Pass"
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${row.status === "Pass"
                                 ? "bg-green-100 text-green-700"
                                 : "bg-red-100 text-red-700"
-                            }`}
+                              }`}
                           >
                             {row.status}
                           </span>
@@ -353,11 +361,10 @@ const HomePage = () => {
             <button
               onClick={handleDownloadPdf}
               disabled={rows.length === 0}
-              className={`px-5 py-2 rounded-lg font-medium transition ${
-                rows.length > 0
+              className={`px-5 py-2 rounded-lg font-medium transition ${rows.length > 0
                   ? "bg-[#2e4d9e] text-white hover:bg-[#3a5cb8]"
                   : "bg-slate-200 text-slate-400 cursor-not-allowed"
-              }`}
+                }`}
             >
               Download PDF
             </button>
