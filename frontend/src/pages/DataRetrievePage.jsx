@@ -8,22 +8,24 @@ import aaiLogo from "../assets/aai-logo.jpg";
 const ORG_OPTIONS = [
   "BCAS", "CISF", "IMD",
   "AAI / ATM / Operations", "AAI / ATM / Training Cell", "AAI / ATM / SQMS",
-  "AAI / ATM / Automation", "AAI / ATM / RNFC", "AAI / ATM / Roaster & Leave Management",
+  "AAI / ATM / INDRA Automation", "AAI / ATM / RNFC", "AAI / ATM / Roaster & Leave Management",
   "AAI / CNS / GNSS", "AAI / CNS / ILS / LPDME", "AAI / CNS / ILS / LLZ",
   "AAI / CNS / ILS / GP", "AAI / CNS / VOR", "AAI / CNS / ASMGCS",
-  "AAI / CNS / Automation", "AAI / CNS / DME", "AAI / CNS / Nav and Status Indicator",
+  "AAI / CNS / Automation", "AAI / CNS / HPDME", "AAI / CNS / Nav and Status Indicator",
   "AAI / CNS / ADSB", "AAI / CNS / Radar", "AAI / CNS / (Hotline/Intercom/DSC/STD)",
   "AAI / CNS / VCCS", "AAI / CNS / VHF / 121.625", "AAI / CNS / VHF / 125.25",
   "AAI / CNS / VHF / 119.75", "AAI / CNS / VHF / 120.225", "AAI / CNS / VHF / 127.575",
   "AAI / CNS / VHF / 121.5", "AAI / CNS / VHF / 124.3", "AAI / CNS / VHF / 125.975",
-  "Adani / Electrical", "Adani / Civil", "Adani / AOCC", "Adani / AOCC / Bay Management", "Adani / Apron Control", "Adani / Apron Control / Laser Interface", "Adani / General Admin",
+  "Adani / Electrical", "Adani / Civil", "Adani / AOCC", "Adani / AOCC / Bay Management", "Adani / Apron Control", "Adani / Apron Control / Laser Interference", "Adani / General Admin",
+  "AAI / CNS / (Broadband/LAN/Internet)", "AAI / ATM / ACDM", "Adani / IT", "AAI / CNS / ATIS", "AAI / CNS / Desktop", "AAI / CNS / Printers", "AAI / CNS / Radar-MSSR", "AAI / CNS / Radar-Primary",
+  "AAI / CNS / Store", "AAI / ATM / Store", "AAI / ATM / General", "AAI / ATM / Administration",
 ].sort((a, b) => a.localeCompare(b));
 
 const UNIT_OPTIONS = [
-  "TWRA", "SMC-D", "TMRD", "APP(P)", "APP(S)", "ACC(P)", "ACC(S)", "ACC(A)",
+  "TWR-A", "SMC-D", "TWR-D", "APP(P)", "APP(S)", "ACC(P)", "ACC(S)", "ACC(A)",
 ].sort((a, b) => a.localeCompare(b));
 
-const STATUS_OPTIONS = ["Pass", "Fail"];
+const STATUS_OPTIONS = ["Resolved", "Pending"];
 
 const API_URL = "/api/grievances";
 
@@ -115,13 +117,13 @@ const DataRetrievePage = () => {
   }, [allRows, fromDate, toDate, orgFilter, unitFilter, statusFilter]);
 
   const handleDownloadPdf = () => {
-    const doc = new jsPDF();
+    const doc = new jsPDF({ orientation: "landscape" });
     doc.setFontSize(14);
-    doc.text("Aero Grievance Manager - Filtered Data", 14, 15);
+    doc.text("ATM Complaint Management System, Jaipur International Airport", 14, 15);
 
     autoTable(doc, {
       startY: 22,
-      head: [["S.No", "Date", "Time", "Organization Name", "Complaining Unit", "Log Extracts", "Status", "Remarks"]],
+      head: [["S.No", "Date", "Time", "Organization Name", "ATS Unit", "Log Extracts", "Status", "Remarks"]],
       body: filteredRows.map((r, i) => {
         const d = new Date(r.createdAt);
         return [
@@ -194,7 +196,7 @@ const DataRetrievePage = () => {
             />
 
             <CheckListDropdown
-              label="Complaining Unit"
+              label="ATS Unit"
               options={UNIT_OPTIONS}
               selected={unitFilter}
               onToggle={toggleFilter(setUnitFilter)}
@@ -222,7 +224,7 @@ const DataRetrievePage = () => {
             <table className="w-full text-sm">
               <thead className="bg-[#2e4d9e] text-white">
                 <tr>
-                  {["S.No", "Date", "Time", "Organization Name", "Complaining Unit", "Log Extracts", "Status", "Remarks"].map((h) => (
+                  {["S.No", "Date", "Time", "Organization Name", "ATS Unit", "Log Extracts", "Status", "Remarks"].map((h) => (
                     <th key={h} className="px-4 py-3 text-left font-medium whitespace-nowrap">
                       {h}
                     </th>
@@ -250,7 +252,7 @@ const DataRetrievePage = () => {
                         <td className="px-4 py-3">
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              row.status === "Pass"
+                              row.status === "Resolved"
                                 ? "bg-green-100 text-green-700"
                                 : "bg-red-100 text-red-700"
                             }`}

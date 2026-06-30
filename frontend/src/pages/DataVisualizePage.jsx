@@ -10,24 +10,26 @@ import aaiLogo from "../assets/aai-logo.jpg";
 const ORG_OPTIONS = [
   "BCAS", "CISF", "IMD",
   "AAI / ATM / Operations", "AAI / ATM / Training Cell", "AAI / ATM / SQMS",
-  "AAI / ATM / Automation", "AAI / ATM / RNFC", "AAI / ATM / Roaster & Leave Management",
+  "AAI / ATM / INDRA Automation", "AAI / ATM / RNFC", "AAI / ATM / Roaster & Leave Management",
   "AAI / CNS / GNSS", "AAI / CNS / ILS / LPDME", "AAI / CNS / ILS / LLZ",
   "AAI / CNS / ILS / GP", "AAI / CNS / VOR", "AAI / CNS / ASMGCS",
-  "AAI / CNS / Automation", "AAI / CNS / DME", "AAI / CNS / Nav and Status Indicator",
+  "AAI / CNS / Automation", "AAI / CNS / HPDME", "AAI / CNS / Nav and Status Indicator",
   "AAI / CNS / ADSB", "AAI / CNS / Radar", "AAI / CNS / (Hotline/Intercom/DSC/STD)",
   "AAI / CNS / VCCS", "AAI / CNS / VHF / 121.625", "AAI / CNS / VHF / 125.25",
   "AAI / CNS / VHF / 119.75", "AAI / CNS / VHF / 120.225", "AAI / CNS / VHF / 127.575",
   "AAI / CNS / VHF / 121.5", "AAI / CNS / VHF / 124.3", "AAI / CNS / VHF / 125.975",
-  "Adani / Electrical", "Adani / Civil", "Adani / AOCC", "Adani / AOCC / Bay Management", "Adani / Apron Control", "Adani / Apron Control / Laser Interface", "Adani / General Admin",
+  "Adani / Electrical", "Adani / Civil", "Adani / AOCC", "Adani / AOCC / Bay Management", "Adani / Apron Control", "Adani / Apron Control / Laser Interference", "Adani / General Admin",
+  "AAI / CNS / (Broadband/LAN/Internet)", "AAI / ATM / ACDM", "Adani / IT", "AAI / CNS / ATIS", "AAI / CNS / Desktop", "AAI / CNS / Printers", "AAI / CNS / Radar-MSSR", "AAI / CNS / Radar-Primary",
+  "AAI / CNS / Store", "AAI / ATM / Store", "AAI / ATM / General", "AAI / ATM / Administration",
 ].sort((a, b) => a.localeCompare(b));
 
 const UNIT_OPTIONS = [
-  "TWRA", "SMC-D", "TMRD", "APP(P)", "APP(S)", "ACC(P)", "ACC(S)", "ACC(A)",
+  "TWR-A", "SMC-D", "TWR-D", "APP(P)", "APP(S)", "ACC(P)", "ACC(S)", "ACC(A)",
 ].sort((a, b) => a.localeCompare(b));
 
-const STATUS_OPTIONS = ["Pass", "Fail"];
+const STATUS_OPTIONS = ["Resolved", "Pending"];
 const API_URL = "/api/grievances";
-const COLORS = { Pass: "#22c55e", Fail: "#ef4444", Total: "#2e4d9e" };
+const COLORS = { Resolved: "#22c55e", Pending: "#ef4444", Total: "#2e4d9e" };
 
 const toLocalDateString = (date) => {
   const y = date.getFullYear();
@@ -115,7 +117,7 @@ const DataVisualizePage = () => {
   const totalEntries = filteredRows.length;
 
   const pieData = useMemo(() => {
-    const counts = { Pass: 0, Fail: 0 };
+    const counts = { Resolved: 0, Pending: 0 };
     filteredRows.forEach((row) => {
       counts[row.status] = (counts[row.status] || 0) + 1;
     });
@@ -127,26 +129,26 @@ const DataVisualizePage = () => {
   const orgStackedData = useMemo(() => {
     const map = {};
     filteredRows.forEach((row) => {
-      if (!map[row.organizationName]) map[row.organizationName] = { name: row.organizationName, Pass: 0, Fail: 0 };
+      if (!map[row.organizationName]) map[row.organizationName] = { name: row.organizationName, Resolved: 0, Pending: 0 };
       map[row.organizationName][row.status] += 1;
     });
-    return Object.values(map).sort((a, b) => (b.Pass + b.Fail) - (a.Pass + a.Fail));
+    return Object.values(map).sort((a, b) => (b.Resolved + b.Pending) - (a.Resolved + a.Pending));
   }, [filteredRows]);
 
   const unitStackedData = useMemo(() => {
     const map = {};
     filteredRows.forEach((row) => {
-      if (!map[row.complainingUnit]) map[row.complainingUnit] = { name: row.complainingUnit, Pass: 0, Fail: 0 };
+      if (!map[row.complainingUnit]) map[row.complainingUnit] = { name: row.complainingUnit, Resolved: 0, Pending: 0 };
       map[row.complainingUnit][row.status] += 1;
     });
-    return Object.values(map).sort((a, b) => (b.Pass + b.Fail) - (a.Pass + a.Fail));
+    return Object.values(map).sort((a, b) => (b.Resolved + b.Pending) - (a.Resolved + a.Pending));
   }, [filteredRows]);
 
   const trendData = useMemo(() => {
     const map = {};
     filteredRows.forEach((row) => {
       const dateStr = toLocalDateString(new Date(row.createdAt));
-      if (!map[dateStr]) map[dateStr] = { date: dateStr, Pass: 0, Fail: 0, Total: 0 };
+      if (!map[dateStr]) map[dateStr] = { date: dateStr, Resolved: 0, Pending: 0, Total: 0 };
       map[dateStr][row.status] += 1;
       map[dateStr].Total += 1;
     });
@@ -195,7 +197,7 @@ const DataVisualizePage = () => {
               />
             </div>
             <CheckListDropdown label="Organization Name" options={ORG_OPTIONS} selected={orgFilter} onToggle={toggleFilter(setOrgFilter)} />
-            <CheckListDropdown label="Complaining Unit" options={UNIT_OPTIONS} selected={unitFilter} onToggle={toggleFilter(setUnitFilter)} />
+            <CheckListDropdown label="ATS Unit" options={UNIT_OPTIONS} selected={unitFilter} onToggle={toggleFilter(setUnitFilter)} />
             <div>
               <label className="block text-xs font-medium text-slate-500 mb-1">Status</label>
               <select
@@ -221,14 +223,14 @@ const DataVisualizePage = () => {
             {/* Total entries */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
               <StatCard label="Total Entries" value={totalEntries} />
-              <StatCard label="Passed" value={filteredRows.filter((r) => r.status === "Pass").length} accent="text-green-600" />
-              <StatCard label="Failed" value={filteredRows.filter((r) => r.status === "Fail").length} accent="text-red-600" />
+              <StatCard label="Resolved" value={filteredRows.filter((r) => r.status === "Resolved").length} accent="text-green-600" />
+              <StatCard label="Pending" value={filteredRows.filter((r) => r.status === "Pending").length} accent="text-red-600" />
             </div>
 
             {/* Line graph: Total + Pass + Fail over time */}
             <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6 mb-6">
               <h3 className="text-base font-semibold text-slate-800 mb-1">Complaints Over Time</h3>
-              <p className="text-xs text-slate-400 mb-4">Total volume alongside Pass/Fail trend</p>
+              <p className="text-xs text-slate-400 mb-4">Total volume alongside Resolved/Pending trend</p>
               <ResponsiveContainer width="100%" height={320}>
                 <LineChart data={trendData} margin={{ top: 10, right: 20, left: 0, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -237,16 +239,16 @@ const DataVisualizePage = () => {
                   <Tooltip />
                   <Legend />
                   <Line type="monotone" dataKey="Total" stroke={COLORS.Total} strokeWidth={2.5} dot={{ r: 3 }} />
-                  <Line type="monotone" dataKey="Pass" stroke={COLORS.Pass} strokeWidth={2} dot={{ r: 3 }} />
-                  <Line type="monotone" dataKey="Fail" stroke={COLORS.Fail} strokeWidth={2} dot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="Resolved" stroke={COLORS.Resolved} strokeWidth={2} dot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="Pending" stroke={COLORS.Pending} strokeWidth={2} dot={{ r: 3 }} />
                 </LineChart>
               </ResponsiveContainer>
             </div>
 
-            {/* Complaining Unit bar + Pie chart, side by side */}
+            {/* ATS Unit bar + Pie chart, side by side */}
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6">
-                <h3 className="text-base font-semibold text-slate-800 mb-1">Complaining Unit Split — Pass/Fail</h3>
+                <h3 className="text-base font-semibold text-slate-800 mb-1">ATS Unit Split — Resolved/Pending</h3>
                 <ResponsiveContainer width="100%" height={360}>
                   <BarChart data={unitStackedData} margin={{ top: 10, right: 10, left: 0, bottom: 20 }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -254,14 +256,14 @@ const DataVisualizePage = () => {
                     <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#475569" }} />
                     <Tooltip />
                     <Legend />
-                    <Bar dataKey="Pass" stackId="a" fill={COLORS.Pass} />
-                    <Bar dataKey="Fail" stackId="a" fill={COLORS.Fail} radius={[6, 6, 0, 0]} />
+                    <Bar dataKey="Resolved" stackId="a" fill={COLORS.Resolved} />
+                    <Bar dataKey="Pending" stackId="a" fill={COLORS.Pending} radius={[6, 6, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
 
               <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6">
-                <h3 className="text-base font-semibold text-slate-800 mb-1">Pass / Fail Breakdown</h3>
+                <h3 className="text-base font-semibold text-slate-800 mb-1">Resolved / Pending Breakdown</h3>
                 <ResponsiveContainer width="100%" height={360}>
                   <PieChart>
                     <Pie
@@ -286,7 +288,7 @@ const DataVisualizePage = () => {
 
             {/* Organization split bar, own row */}
             <div className="bg-white rounded-2xl shadow-md border border-slate-200 p-6">
-              <h3 className="text-base font-semibold text-slate-800 mb-1">Organization Split — Pass/Fail</h3>
+              <h3 className="text-base font-semibold text-slate-800 mb-1">Organization Split — Resolved/Pending</h3>
               <ResponsiveContainer width="100%" height={360}>
                 <BarChart data={orgStackedData} margin={{ top: 10, right: 10, left: 0, bottom: 80 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
@@ -294,8 +296,8 @@ const DataVisualizePage = () => {
                   <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: "#475569" }} />
                   <Tooltip />
                   <Legend />
-                  <Bar dataKey="Pass" stackId="a" fill={COLORS.Pass} />
-                  <Bar dataKey="Fail" stackId="a" fill={COLORS.Fail} radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="Resolved" stackId="a" fill={COLORS.Resolved} />
+                  <Bar dataKey="Pending" stackId="a" fill={COLORS.Pending} radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
             </div>
