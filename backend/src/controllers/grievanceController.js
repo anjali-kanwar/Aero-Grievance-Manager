@@ -12,8 +12,8 @@ export async function getAllGrievances(req, res) {
 
 export async function createGrievance(req, res) {
   try {
-    const { organizationName, complainingUnit, logExtract, status, remarks } = req.body;
-    const grievance = new Grievance({ organizationName, complainingUnit, logExtract, status, remarks });
+    const { organizationName, complainingUnit, logExtract, status, response, pdc, remarks } = req.body;
+    const grievance = new Grievance({ organizationName, complainingUnit, logExtract, status, response, pdc, remarks });
     const saved = await grievance.save();
     res.status(201).json(saved);
   } catch (error) {
@@ -24,10 +24,10 @@ export async function createGrievance(req, res) {
 
 export async function updateGrievance(req, res) {
   try {
-    const { organizationName, complainingUnit, logExtract, status, remarks } = req.body;
+    const { organizationName, complainingUnit, logExtract, status, response, pdc, remarks } = req.body;
     const updated = await Grievance.findByIdAndUpdate(
       req.params.id,
-      { organizationName, complainingUnit, logExtract, status, remarks },
+      { organizationName, complainingUnit, logExtract, status, response, pdc, remarks },
       { new: true }
     );
     if (!updated) return res.status(404).json({ message: "Grievance not found" });

@@ -12,7 +12,7 @@ const ORG_OPTIONS = [
   "AAI / CNS / GNSS", "AAI / CNS / ILS / LPDME", "AAI / CNS / ILS / LLZ",
   "AAI / CNS / ILS / GP", "AAI / CNS / VOR", "AAI / CNS / ASMGCS",
   "AAI / CNS / Automation", "AAI / CNS / HPDME", "AAI / CNS / Nav and Status Indicator",
-  "AAI / CNS / ADSB", "AAI / CNS / Radar", "AAI / CNS / (Hotline/Intercom/DSC/STD)",
+  "AAI / CNS / ADSB", "AAI / CNS / (Hotline/Intercom/DSC/STD)",
   "AAI / CNS / VCCS", "AAI / CNS / VHF / 121.625", "AAI / CNS / VHF / 125.25",
   "AAI / CNS / VHF / 119.75", "AAI / CNS / VHF / 120.225", "AAI / CNS / VHF / 127.575",
   "AAI / CNS / VHF / 121.5", "AAI / CNS / VHF / 124.3", "AAI / CNS / VHF / 125.975",
@@ -123,7 +123,7 @@ const DataRetrievePage = () => {
 
     autoTable(doc, {
       startY: 22,
-      head: [["S.No", "Date", "Time", "Organization Name", "ATS Unit", "Log Extracts", "Status", "Remarks"]],
+      head: [["S.No", "Date", "Time", "Organization Name", "ATS Unit", "Log Extracts", "Status", "Response", "PDC", "Remarks"]],
       body: filteredRows.map((r, i) => {
         const d = new Date(r.createdAt);
         return [
@@ -134,6 +134,8 @@ const DataRetrievePage = () => {
           r.complainingUnit,
           r.logExtract,
           r.status,
+          r.response || "",
+          r.pdc ? formatDateDDMMYYYY(new Date(r.pdc)) : "",
           r.remarks,
         ];
       }),
@@ -224,7 +226,7 @@ const DataRetrievePage = () => {
             <table className="w-full text-sm">
               <thead className="bg-[#2e4d9e] text-white">
                 <tr>
-                  {["S.No", "Date", "Time", "Organization Name", "ATS Unit", "Log Extracts", "Status", "Remarks"].map((h) => (
+                  {["S.No", "Date", "Time", "Organization Name", "ATS Unit", "Log Extracts", "Status", "Response", "PDC", "Remarks"].map((h) => (
                     <th key={h} className="px-4 py-3 text-left font-medium whitespace-nowrap">
                       {h}
                     </th>
@@ -234,7 +236,7 @@ const DataRetrievePage = () => {
               <tbody>
                 {filteredRows.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="text-center py-8 text-slate-400">
+                    <td colSpan={10} className="text-center py-8 text-slate-400">
                       No matching data
                     </td>
                   </tr>
@@ -259,6 +261,10 @@ const DataRetrievePage = () => {
                           >
                             {row.status}
                           </span>
+                        </td>
+                        <td className="px-4 py-3 max-w-xs truncate">{row.response || "—"}</td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          {row.pdc ? formatDateDDMMYYYY(new Date(row.pdc)) : "—"}
                         </td>
                         <td className="px-4 py-3 max-w-xs truncate">{row.remarks}</td>
                       </tr>

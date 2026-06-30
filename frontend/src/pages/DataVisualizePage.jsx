@@ -14,7 +14,7 @@ const ORG_OPTIONS = [
   "AAI / CNS / GNSS", "AAI / CNS / ILS / LPDME", "AAI / CNS / ILS / LLZ",
   "AAI / CNS / ILS / GP", "AAI / CNS / VOR", "AAI / CNS / ASMGCS",
   "AAI / CNS / Automation", "AAI / CNS / HPDME", "AAI / CNS / Nav and Status Indicator",
-  "AAI / CNS / ADSB", "AAI / CNS / Radar", "AAI / CNS / (Hotline/Intercom/DSC/STD)",
+  "AAI / CNS / ADSB", "AAI / CNS / (Hotline/Intercom/DSC/STD)",
   "AAI / CNS / VCCS", "AAI / CNS / VHF / 121.625", "AAI / CNS / VHF / 125.25",
   "AAI / CNS / VHF / 119.75", "AAI / CNS / VHF / 120.225", "AAI / CNS / VHF / 127.575",
   "AAI / CNS / VHF / 121.5", "AAI / CNS / VHF / 124.3", "AAI / CNS / VHF / 125.975",

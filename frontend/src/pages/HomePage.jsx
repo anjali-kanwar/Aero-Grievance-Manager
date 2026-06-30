@@ -12,7 +12,7 @@ const ORG_OPTIONS = [
   "AAI / CNS / GNSS", "AAI / CNS / ILS / LPDME", "AAI / CNS / ILS / LLZ",
   "AAI / CNS / ILS / GP", "AAI / CNS / VOR", "AAI / CNS / ASMGCS",
   "AAI / CNS / Automation", "AAI / CNS / HPDME", "AAI / CNS / Nav and Status Indicator",
-  "AAI / CNS / ADSB", "AAI / CNS / Radar", "AAI / CNS / (Hotline/Intercom/DSC/STD)",
+  "AAI / CNS / ADSB", "AAI / CNS / (Hotline/Intercom/DSC/STD)",
   "AAI / CNS / VCCS", "AAI / CNS / VHF / 121.625", "AAI / CNS / VHF / 125.25",
   "AAI / CNS / VHF / 119.75", "AAI / CNS / VHF / 120.225", "AAI / CNS / VHF / 127.575",
   "AAI / CNS / VHF / 121.5", "AAI / CNS / VHF / 124.3", "AAI / CNS / VHF / 125.975",
@@ -30,6 +30,8 @@ const EMPTY_FORM = {
   complainingUnit: "",
   logExtract: "",
   status: "",
+  response: "",
+  pdc: "",
   remarks: "",
 };
 
@@ -116,6 +118,8 @@ const HomePage = () => {
       complainingUnit: row.complainingUnit,
       logExtract: row.logExtract,
       status: row.status,
+      response: row.response || "",
+      pdc: row.pdc ? row.pdc.split("T")[0] : "",
       remarks: row.remarks,
     });
   };
@@ -138,17 +142,19 @@ const HomePage = () => {
 
     autoTable(doc, {
       startY: 22,
-      head: [["S.No", "Date", "Time", "Organization Name", "ATS Unit", "Log Extracts", "Status", "Remarks"]],
+      head: [["S.No", "Date", "Time", "Organization", "Unit", "Log Extract", "Status", "Response", "PDC", "Remarks"]],
       body: rows.map((r, i) => {
         const d = new Date(r.createdAt);
         return [
           i + 1,
-          formatDateDDMMYYYY(d),
+          d.toLocaleDateString(),
           d.toLocaleTimeString(),
           r.organizationName,
           r.complainingUnit,
           r.logExtract,
           r.status,
+          r.response || "",
+          r.pdc ? formatDateDDMMYYYY(new Date(r.pdc)) : "",
           r.remarks,
         ];
       }),
@@ -198,7 +204,7 @@ const HomePage = () => {
             {editingId ? "Edit Entry" : "Add New Entry"}
           </h2>
 
-          <div className="grid md:grid-cols-5 gap-4">
+          <div className="grid md:grid-cols-7 gap-4">
             <div className="md:col-span-1">
               <label className="block text-xs font-medium text-slate-500 mb-1">
                 Organization Name
@@ -261,6 +267,31 @@ const HomePage = () => {
 
             <div className="md:col-span-1">
               <label className="block text-xs font-medium text-slate-500 mb-1">
+                Response
+              </label>
+              <textarea
+                value={form.response}
+                onChange={handleChange("response")}
+                rows={1}
+                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2e4d9e] resize-none"
+                placeholder="Describe response"
+              />
+            </div>
+
+            <div className="md:col-span-1">
+              <label className="block text-xs font-medium text-slate-500 mb-1">
+                PDC
+              </label>
+              <input
+                type="date"
+                value={form.pdc}
+                onChange={handleChange("pdc")}
+                className="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#2e4d9e]"
+              />
+            </div>
+
+            <div className="md:col-span-1">
+              <label className="block text-xs font-medium text-slate-500 mb-1">
                 Remarks
               </label>
               <textarea
@@ -286,8 +317,8 @@ const HomePage = () => {
               onClick={handleSubmit}
               disabled={!isFormComplete || loading}
               className={`px-5 py-2 rounded-lg font-medium transition ${isFormComplete && !loading
-                  ? "bg-[#2e4d9e] text-white hover:bg-[#3a5cb8]"
-                  : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                ? "bg-[#2e4d9e] text-white hover:bg-[#3a5cb8]"
+                : "bg-slate-200 text-slate-400 cursor-not-allowed"
                 }`}
             >
               {editingId ? "Update Data" : "Add Data"}
@@ -301,7 +332,7 @@ const HomePage = () => {
             <table className="w-full text-sm">
               <thead className="bg-[#2e4d9e] text-white">
                 <tr>
-                  {["S.No", "Date", "Time", "Organization Name", "ATS Unit", "Log Extracts", "Status", "Remarks", "Actions"].map((h) => (
+                  {["S.No", "Date", "Time", "Organization Name", "ATS Unit", "Log Extracts", "Status", "Response", "PDC", "Remarks", "Actions"].map((h) => (
                     <th key={h} className="px-4 py-3 text-left font-medium whitespace-nowrap">
                       {h}
                     </th>
@@ -311,7 +342,7 @@ const HomePage = () => {
               <tbody>
                 {rows.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="text-center py-8 text-slate-400">
+                    <td colSpan={11} className="text-center py-8 text-slate-400">
                       No data added yet
                     </td>
                   </tr>
@@ -329,12 +360,16 @@ const HomePage = () => {
                         <td className="px-4 py-3">
                           <span
                             className={`px-2 py-1 rounded-full text-xs font-medium ${row.status === "Resolved"
-                                ? "bg-green-100 text-green-700"
-                                : "bg-red-100 text-red-700"
+                              ? "bg-green-100 text-green-700"
+                              : "bg-red-100 text-red-700"
                               }`}
                           >
                             {row.status}
                           </span>
+                        </td>
+                        <td className="px-4 py-3 max-w-xs truncate">{row.response || "—"}</td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          {row.pdc ? formatDateDDMMYYYY(new Date(row.pdc)) : "—"}
                         </td>
                         <td className="px-4 py-3 max-w-xs truncate">{row.remarks}</td>
                         <td className="px-4 py-3 whitespace-nowrap">
@@ -364,8 +399,8 @@ const HomePage = () => {
               onClick={handleDownloadPdf}
               disabled={rows.length === 0}
               className={`px-5 py-2 rounded-lg font-medium transition ${rows.length > 0
-                  ? "bg-[#2e4d9e] text-white hover:bg-[#3a5cb8]"
-                  : "bg-slate-200 text-slate-400 cursor-not-allowed"
+                ? "bg-[#2e4d9e] text-white hover:bg-[#3a5cb8]"
+                : "bg-slate-200 text-slate-400 cursor-not-allowed"
                 }`}
             >
               Download PDF

@@ -63,7 +63,7 @@ const LoginPage = () => {
             </div>
             <div className="text-center">
               <p className="text-white/90 font-semibold tracking-wide text-sm uppercase">
-                Grievance Management System
+                ATM Complaint Management System
               </p>
               <p className="text-white/40 text-xs mt-1 tracking-wider">
                 Airports Authority of India

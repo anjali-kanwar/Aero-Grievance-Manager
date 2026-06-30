@@ -6,9 +6,11 @@ const grievanceSchema = new mongoose.Schema(
     complainingUnit: { type: String, required: true },
     logExtract: { type: String, required: true },
     status: { type: String, enum: ["Resolved", "Pending"], required: true },
+    response: { type: String, required: true },
+    pdc: { type: Date, required: true },
     remarks: { type: String, required: true },
   },
-  { timestamps: true } // gives us createdAt -> used as Date & Time
+  { timestamps: true }
 );
 
 const Grievance = mongoose.model("Grievance", grievanceSchema);
