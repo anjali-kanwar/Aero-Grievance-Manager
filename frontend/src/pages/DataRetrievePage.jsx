@@ -15,7 +15,7 @@ const ORG_OPTIONS = [
   "AAI / CNS / ADSB", "AAI / CNS / Radar", "AAI / CNS / (Hotline/Intercom/DSC/STD)",
   "AAI / CNS / VCCS", "AAI / CNS / VHF / 121.625", "AAI / CNS / VHF / 125.25",
   "AAI / CNS / VHF / 119.75", "AAI / CNS / VHF / 120.225", "AAI / CNS / VHF / 127.575",
-  "AAI / CNS / VHF / 121.5", "AAI / CNS / VHF / 124.3", "AAI / CNS / VHF /125.975",
+  "AAI / CNS / VHF / 121.5", "AAI / CNS / VHF / 124.3", "AAI / CNS / VHF / 125.975",
   "Adani / Electrical", "Adani / Civil", "Adani / AOCC", "Adani / AOCC / Bay Management", "Adani / Apron Control", "Adani / Apron Control / Laser Interface", "Adani / General Admin",
 ].sort((a, b) => a.localeCompare(b));
 
