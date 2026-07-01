@@ -44,6 +44,17 @@ const formatDateDDMMYYYY = (date) => {
   return `${d}/${m}/${y}`;
 };
 
+const loadImageAsBase64 = async (url) => {
+  const res = await fetch(url);
+  const blob = await res.blob();
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+};
+
 const HomePage = () => {
   const navigate = useNavigate();
   const [form, setForm] = useState(EMPTY_FORM);
@@ -135,35 +146,46 @@ const HomePage = () => {
     }
   };
 
-  const handleDownloadPdf = () => {
-    const doc = new jsPDF({ orientation: "landscape" });
-    doc.setFontSize(14);
-    doc.text("ATM Complaint Management System, Jaipur International Airport", 14, 15);
+  const handleDownloadPdf = async () => {
+  const doc = new jsPDF({ orientation: "landscape" });
+  const pageWidth = doc.internal.pageSize.getWidth();
 
-    autoTable(doc, {
-      startY: 22,
-      head: [["S.No", "Date", "Time", "Organization", "Unit", "Log Extract", "Status", "Response", "PDC", "Remarks"]],
-      body: rows.map((r, i) => {
-        const d = new Date(r.createdAt);
-        return [
-          i + 1,
-          d.toLocaleDateString(),
-          d.toLocaleTimeString(),
-          r.organizationName,
-          r.complainingUnit,
-          r.logExtract,
-          r.status,
-          r.response || "",
-          r.pdc ? formatDateDDMMYYYY(new Date(r.pdc)) : "",
-          r.remarks,
-        ];
-      }),
-      styles: { fontSize: 8 },
-      headStyles: { fillColor: [46, 77, 158] },
-    });
+  try {
+    const logoBase64 = await loadImageAsBase64(aaiLogo);
+    const logoWidth = 20;
+    const logoHeight = 20;
+    doc.addImage(logoBase64, "JPEG", pageWidth / 2 - logoWidth / 2, 8, logoWidth, logoHeight);
+  } catch (err) {
+    console.log("Could not load logo for PDF", err);
+  }
 
-    doc.save("grievance-data.pdf");
-  };
+  doc.setFontSize(14);
+  doc.text("ATM Complaint Management System, Jaipur International Airport", pageWidth / 2, 30, { align: "center" });
+
+  autoTable(doc, {
+    startY: 42,
+    head: [["S.No", "Date", "Time", "Organization Name", "ATS Unit", "Log Extract", "Status", "Response", "PDC", "Remarks"]],
+    body: rows.map((r, i) => {
+      const d = new Date(r.createdAt);
+      return [
+        i + 1,
+        formatDateDDMMYYYY(d),
+        d.toLocaleTimeString(),
+        r.organizationName,
+        r.complainingUnit,
+        r.logExtract,
+        r.status,
+        r.response || "",
+        r.pdc ? formatDateDDMMYYYY(new Date(r.pdc)) : "",
+        r.remarks,
+      ];
+    }),
+    styles: { fontSize: 8 },
+    headStyles: { fillColor: [46, 77, 158] },
+  });
+
+  doc.save("grievance-data.pdf");
+};
 
   return (
     <div className="min-h-screen bg-slate-50">
